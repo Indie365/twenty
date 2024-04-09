@@ -25,6 +25,7 @@ import { User } from 'src/engine/core-modules/user/user.entity';
 import { useThrottler } from 'src/engine/api/graphql/graphql-config/hooks/use-throttler';
 import { JwtData } from 'src/engine/core-modules/auth/types/jwt-data.type';
 import { useSentryTracing } from 'src/engine/integrations/exception-handler/hooks/use-sentry-tracing';
+import { testGraphqlSchema } from 'src/engine/api/__mocks__/testGraphqlSchema';
 
 export interface GraphQLContext extends YogaDriverServerContext<'express'> {
   user?: User;
@@ -44,6 +45,8 @@ export class GraphQLConfigService
 
   createGqlOptions(): YogaDriverConfig {
     const isDebugMode = this.environmentService.get('DEBUG_MODE');
+    const isTestEnv = this.environmentService.get('ENV') === 'test';
+
     const plugins = [
       useThrottler({
         ttl: this.environmentService.get('API_RATE_LIMITING_TTL'),
@@ -62,65 +65,10 @@ export class GraphQLConfigService
     }
 
     const config: YogaDriverConfig = {
-      autoSchemaFile: true,
+      autoSchemaFile: !isTestEnv,
+      schema: isTestEnv ? testGraphqlSchema : undefined,
       include: [CoreEngineModule],
-      conditionalSchema: async (context) => {
-        let user: User | undefined;
-        let workspace: Workspace | undefined;
-
-        try {
-          if (!this.tokenService.isTokenPresent(context.req)) {
-            return new GraphQLSchema({});
-          }
-
-          const data = await this.tokenService.validateToken(context.req);
-
-          user = data.user;
-          workspace = data.workspace;
-
-          return await this.createSchema(context, data);
-        } catch (error) {
-          if (error instanceof UnauthorizedException) {
-            throw new GraphQLError('Unauthenticated', {
-              extensions: {
-                code: 'UNAUTHENTICATED',
-              },
-            });
-          }
-
-          if (error instanceof JsonWebTokenError) {
-            //mockedUserJWT
-            throw new GraphQLError('Unauthenticated', {
-              extensions: {
-                code: 'UNAUTHENTICATED',
-              },
-            });
-          }
-
-          if (error instanceof TokenExpiredError) {
-            throw new GraphQLError('Unauthenticated', {
-              extensions: {
-                code: 'UNAUTHENTICATED',
-              },
-            });
-          }
-
-          throw handleExceptionAndConvertToGraphQLError(
-            error,
-            this.exceptionHandlerService,
-            user
-              ? {
-                  id: user.id,
-                  email: user.email,
-                  firstName: user.firstName,
-                  lastName: user.lastName,
-                  workspaceId: workspace?.id,
-                  workspaceDisplayName: workspace?.displayName,
-                }
-              : undefined,
-          );
-        }
-      },
+      conditionalSchema: isTestEnv ? this.getConditionnalSchema : undefined,
       resolvers: { JSON: GraphQLJSON },
       plugins: plugins,
     };
@@ -157,5 +105,65 @@ export class GraphQLConfigService
       data.workspace.id,
       data.user?.id,
     );
+  }
+
+  async getConditionnalSchema(
+    context: YogaDriverServerContext<'express'> & YogaInitialContext,
+  ) {
+    let user: User | undefined;
+    let workspace: Workspace | undefined;
+
+    try {
+      if (!this.tokenService.isTokenPresent(context.req)) {
+        return new GraphQLSchema({});
+      }
+
+      const data = await this.tokenService.validateToken(context.req);
+
+      user = data.user;
+      workspace = data.workspace;
+
+      return await this.createSchema(context, data);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw new GraphQLError('Unauthenticated', {
+          extensions: {
+            code: 'UNAUTHENTICATED',
+          },
+        });
+      }
+
+      if (error instanceof JsonWebTokenError) {
+        //mockedUserJWT
+        throw new GraphQLError('Unauthenticated', {
+          extensions: {
+            code: 'UNAUTHENTICATED',
+          },
+        });
+      }
+
+      if (error instanceof TokenExpiredError) {
+        throw new GraphQLError('Unauthenticated', {
+          extensions: {
+            code: 'UNAUTHENTICATED',
+          },
+        });
+      }
+
+      throw handleExceptionAndConvertToGraphQLError(
+        error,
+        this.exceptionHandlerService,
+        user
+          ? {
+              id: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              workspaceId: workspace?.id,
+              workspaceDisplayName: workspace?.displayName,
+            }
+          : undefined,
+      );
+    }
   }
 }

@@ -310,6 +310,10 @@ export class EnvironmentVariables {
   AUTH_GOOGLE_APIS_CALLBACK_URL: string;
 
   CHROME_EXTENSION_REDIRECT_URL: string;
+
+  @IsOptional()
+  @IsString()
+  ENV: string;
 }
 
 export const validate = (

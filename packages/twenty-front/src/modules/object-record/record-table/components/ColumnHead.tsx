@@ -5,7 +5,7 @@ import { useIcons } from 'twenty-ui';
 
 import { FieldMetadata } from '@/object-record/record-field/types/FieldMetadata';
 import { MOBILE_VIEWPORT } from '@/ui/theme/constants/MobileViewport';
-import { scrollLeftState } from '@/ui/utilities/scroll/states/scrollLeftState';
+import { scrollLeftState } from '@/ui/utilities/scroll/states/scrollLeftComponentState';
 
 import { ColumnDefinition } from '../types/ColumnDefinition';
 

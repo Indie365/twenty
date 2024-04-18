@@ -49,6 +49,7 @@ export class EntityEventsToDbListener {
     payload: ObjectRecordCreateEvent<any>,
     operation: string,
   ) {
+      
     if (!payload.objectMetadata.isAuditLogged) {
       return;
     }

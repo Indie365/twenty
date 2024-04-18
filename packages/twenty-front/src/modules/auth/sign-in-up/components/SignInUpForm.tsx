@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -60,9 +60,13 @@ export const SignInUpForm = () => {
     continueWithCredentials,
     continueWithEmail,
     submitCredentials,
+    isGeneratingCaptchaToken,
+    getCaptchaToken,
   } = useSignInUp(form);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (event.key === 'Enter') {
       event.preventDefault();
 
@@ -109,6 +113,10 @@ export const SignInUpForm = () => {
   }, [signInUpMode, workspace?.displayName, isInviteMode, signInUpStep]);
 
   const theme = useTheme();
+
+  useEffect(() => {
+    getCaptchaToken();
+  }, [getCaptchaToken]);
 
   return (
     <>
@@ -209,11 +217,12 @@ export const SignInUpForm = () => {
             </StyledFullWidthMotionDiv>
           )}
 
+          <div id="captcha-widget" data-size="invisible"></div>
           <MainButton
             variant="secondary"
             title={buttonTitle}
             type="submit"
-            onClick={() => {
+            onClick={async () => {
               if (signInUpStep === SignInUpStep.Init) {
                 continueWithEmail();
                 return;
@@ -223,6 +232,7 @@ export const SignInUpForm = () => {
                 return;
               }
               setShowErrors(true);
+
               form.handleSubmit(submitCredentials)();
             }}
             Icon={() => form.formState.isSubmitting && <Loader />}

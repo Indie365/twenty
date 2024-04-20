@@ -26,7 +26,7 @@ const StyledInput = styled.input<{ hasError?: boolean }>`
   font-weight: 500;
   font-size: ${({ theme }) => theme.font.size.md};
   width: 100%;
-  color: ${({ hasError, theme }) => (hasError ? theme.color.red : 'inherit')};
+  ${({ hasError, theme }) => hasError && `color: ${theme.color.red}`};
 `;
 
 type DateTimeInputProps = {

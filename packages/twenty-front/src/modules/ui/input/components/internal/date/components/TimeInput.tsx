@@ -9,6 +9,7 @@ import { TIME_MASK } from '@/ui/input/components/internal/date/constants/TimeMas
 
 const StyledIconClock = styled(IconClockHour8)`
   position: absolute;
+  color: ${({ theme }) => theme.font.color.secondary}};
 `;
 
 const StyledTimeInputContainer = styled.div`

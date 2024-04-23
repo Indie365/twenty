@@ -16,6 +16,8 @@ import { OpportunityObjectMetadata } from 'src/modules/opportunity/standard-obje
 import { PersonObjectMetadata } from 'src/modules/person/standard-objects/person.object-metadata';
 import { WorkspaceMemberObjectMetadata } from 'src/modules/workspace-member/standard-objects/workspace-member.object-metadata';
 import { IsNotAuditLogged } from 'src/engine/workspace-manager/workspace-sync-metadata/decorators/is-not-audit-logged.decorator';
+import { MessageObjectMetadata } from 'src/modules/messaging/standard-objects/message.object-metadata';
+import { FileMetadata } from 'src/engine/metadata-modules/field-metadata/composite-types/file.composite-type';
 
 @ObjectMetadata({
   standardId: STANDARD_OBJECT_IDS.attachment,
@@ -54,6 +56,16 @@ export class AttachmentObjectMetadata extends BaseObjectMetadata {
     icon: 'IconList',
   })
   type: string;
+
+  @FieldMetadata({
+    standardId: ATTACHMENT_STANDARD_FIELD_IDS.file,
+    type: FieldMetadataType.FILE,
+    label: 'File',
+    description: 'Attachment file',
+    icon: 'IconCloud',
+  })
+  @IsNullable()
+  file: FileMetadata;
 
   @FieldMetadata({
     standardId: ATTACHMENT_STANDARD_FIELD_IDS.author,
@@ -108,6 +120,17 @@ export class AttachmentObjectMetadata extends BaseObjectMetadata {
   })
   @IsNullable()
   opportunity: Relation<OpportunityObjectMetadata>;
+
+  @FieldMetadata({
+    standardId: ATTACHMENT_STANDARD_FIELD_IDS.message,
+    type: FieldMetadataType.RELATION,
+    label: 'Message',
+    description: 'Attachment message',
+    icon: 'IconMessage',
+    joinColumn: 'messageId',
+  })
+  @IsNullable()
+  message: Relation<MessageObjectMetadata>;
 
   @DynamicRelationFieldMetadata((oppositeObjectMetadata) => ({
     standardId: ATTACHMENT_STANDARD_FIELD_IDS.custom,

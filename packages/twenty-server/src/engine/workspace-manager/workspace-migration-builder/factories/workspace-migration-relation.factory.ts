@@ -88,6 +88,16 @@ export class WorkspaceMigrationRelationFactory {
         );
       }
 
+      const fromFieldMetadata = fromObjectMetadata.fields.find(
+        (field) => field.id === relationMetadata.fromFieldMetadataId,
+      );
+
+      if (!fromFieldMetadata) {
+        throw new Error(
+          `FieldMetadata with id ${relationMetadata.fromFieldMetadataId} not found`,
+        );
+      }
+
       const migrations: WorkspaceMigrationTableAction[] = [
         {
           name: computeObjectTargetTable(toObjectMetadata),
@@ -112,6 +122,8 @@ export class WorkspaceMigrationRelationFactory {
                 relationMetadata.relationType ===
                 RelationMetadataType.ONE_TO_ONE,
               onDelete: relationMetadata.onDeleteAction,
+              foreignName: toFieldMetadata.name,
+              localName: fromFieldMetadata.name,
             },
           ],
         },
@@ -164,6 +176,16 @@ export class WorkspaceMigrationRelationFactory {
         );
       }
 
+      const fromFieldMetadata = fromObjectMetadata.fields.find(
+        (field) => field.id === relationMetadata.fromFieldMetadataId,
+      );
+
+      if (!fromFieldMetadata) {
+        throw new Error(
+          `FieldMetadata with id ${relationMetadata.fromFieldMetadataId} not found`,
+        );
+      }
+
       const migrations: WorkspaceMigrationTableAction[] = [
         {
           name: computeObjectTargetTable(toObjectMetadata),
@@ -178,6 +200,8 @@ export class WorkspaceMigrationRelationFactory {
                 relationMetadata.relationType ===
                 RelationMetadataType.ONE_TO_ONE,
               onDelete: relationMetadata.onDeleteAction,
+              foreignName: toFieldMetadata.name,
+              localName: fromFieldMetadata.name,
             },
           ],
         },

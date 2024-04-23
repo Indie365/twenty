@@ -181,15 +181,17 @@ export class RelationMetadataService extends TypeOrmQueryService<RelationMetadat
     objectMetadataMap: { [key: string]: ObjectMetadataEntity },
     columnName: string,
   ) {
+    const name = computeObjectTargetTable(
+      objectMetadataMap[relationMetadataInput.toObjectMetadataId],
+    );
+
     await this.workspaceMigrationService.createCustomMigration(
       generateMigrationName(`create-${relationMetadataInput.fromName}`),
       relationMetadataInput.workspaceId,
       [
         // Create the column
         {
-          name: computeObjectTargetTable(
-            objectMetadataMap[relationMetadataInput.toObjectMetadataId],
-          ),
+          name,
           action: WorkspaceMigrationTableActionType.ALTER,
           columns: [
             {
@@ -202,9 +204,7 @@ export class RelationMetadataService extends TypeOrmQueryService<RelationMetadat
         },
         // Create the foreignKey
         {
-          name: computeObjectTargetTable(
-            objectMetadataMap[relationMetadataInput.toObjectMetadataId],
-          ),
+          name,
           action: WorkspaceMigrationTableActionType.ALTER,
           columns: [
             {
@@ -218,6 +218,8 @@ export class RelationMetadataService extends TypeOrmQueryService<RelationMetadat
                 relationMetadataInput.relationType ===
                 RelationMetadataType.ONE_TO_ONE,
               onDelete: RelationOnDeleteAction.SET_NULL,
+              foreignName: relationMetadataInput.toName,
+              localName: relationMetadataInput.fromName,
             },
           ],
         },

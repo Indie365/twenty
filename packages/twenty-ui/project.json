@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/twenty-ui/src",
   "projectType": "library",
+  "tags": ["scope:frontend"],
   "targets": {
     "build": {
       "dependsOn": ["^build", "generateBarrels"]
@@ -24,14 +25,16 @@
       "executor": "@nx/eslint:lint",
       "options": {
         "eslintConfig": "{projectRoot}/.eslintrc.cjs",
+        "cache": true,
+        "cacheLocation": "{workspaceRoot}/.cache/eslint",
         "ignorePath": "{workspaceRoot}/.gitignore",
         "lintFilePatterns": [
           "{projectRoot}/src/**/*.{ts,tsx,json}",
           "{projectRoot}/package.json"
-        ],
-        "cache": true
+        ]
       },
       "configurations": {
+        "ci": { "cacheStrategy": "content" },
         "fix": { "fix": true }
       }
     },
@@ -39,7 +42,20 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{projectRoot}/coverage"],
       "options": {
-        "jestConfig": "{projectRoot}/jest.config.ts"
+        "jestConfig": "{projectRoot}/jest.config.ts",
+        "coverage": true,
+        "coverageReporters": ["text-summary"],
+        "cacheDirectory": "../../.cache/jest/{projectRoot}"
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "maxWorkers": 3
+        },
+        "coverage": {
+          "coverageReporters": ["lcov", "text"]
+        },
+        "watch": { "watch": true }
       }
     },
     "typecheck": {
@@ -83,6 +99,5 @@
         "command": "test-storybook -c {projectRoot}/.storybook --url=http://localhost:6007"
       }
     }
-  },
-  "tags": []
+  }
 }

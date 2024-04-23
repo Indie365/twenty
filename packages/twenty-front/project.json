@@ -2,6 +2,7 @@
   "name": "twenty-front",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
+  "tags": ["scope:frontend"],
   "targets": {
     "build": {
       "outputs": ["{options.outputPath}"],
@@ -24,6 +25,16 @@
         "open": true
       }
     },
+    "reset:env": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/.env.example"],
+      "outputs": ["{projectRoot}/.env"],
+      "cache": true,
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "cp .env.example .env"
+      }
+    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
@@ -41,19 +52,20 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "eslintConfig": "{projectRoot}/.eslintrc.cjs",
+        "cache": true,
+        "cacheLocation": "{workspaceRoot}/.cache/eslint",
         "ignorePath": "{workspaceRoot}/.gitignore",
         "lintFilePatterns": [
           "{projectRoot}/src/**/*.{ts,tsx,json}",
           "{projectRoot}/package.json"
         ],
         "maxWarnings": 0,
-        "reportUnusedDisableDirectives": "error",
-        "cache": true
+        "reportUnusedDisableDirectives": "error"
       },
       "configurations": {
         "ci": {
           "eslintConfig": "{projectRoot}/.eslintrc-ci.cjs",
-          "cache": false
+          "cacheStrategy": "content"
         },
         "fix": {
           "fix": true
@@ -78,7 +90,8 @@
       "options": {
         "jestConfig": "{projectRoot}/jest.config.ts",
         "coverage": true,
-        "coverageReporters": ["text-summary"]
+        "coverageReporters": ["text-summary"],
+        "cacheDirectory": "../../.cache/jest/{projectRoot}"
       },
       "configurations": {
         "ci": {

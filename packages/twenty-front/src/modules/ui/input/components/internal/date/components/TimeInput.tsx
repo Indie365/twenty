@@ -8,8 +8,8 @@ import { TIME_BLOCKS } from '@/ui/input/components/internal/date/constants/TimeB
 import { TIME_MASK } from '@/ui/input/components/internal/date/constants/TimeMask';
 
 const StyledIconClock = styled(IconClockHour8)`
+  color: ${({ theme }) => theme.font.color.secondary};
   position: absolute;
-  color: ${({ theme }) => theme.font.color.secondary}};
 `;
 
 const StyledTimeInputContainer = styled.div`

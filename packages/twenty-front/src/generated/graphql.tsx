@@ -562,6 +562,7 @@ export type RemoteServer = {
 
 export type RemoteTable = {
   __typename?: 'RemoteTable';
+  id?: Maybe<Scalars['UUID']>;
   name: Scalars['String'];
   schema: Scalars['String'];
   status: RemoteTableStatus;

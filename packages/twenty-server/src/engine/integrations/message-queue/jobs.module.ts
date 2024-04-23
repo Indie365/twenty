@@ -44,6 +44,7 @@ import { WorkspaceGoogleCalendarSyncModule } from 'src/modules/calendar/services
 import { AutoCompaniesAndContactsCreationModule } from 'src/modules/connected-account/auto-companies-and-contacts-creation/auto-companies-and-contacts-creation.module';
 import { GmailFetchMessagesFromCacheCronJob } from 'src/modules/messaging/crons/jobs/gmail-fetch-messages-from-cache.cron.job';
 import { GmailPartialSyncCronJob } from 'src/modules/messaging/crons/jobs/gmail-partial-sync.cron.job';
+import { BlocklistReimportMessagesJob } from 'src/modules/messaging/jobs/blocklist-reimport-messages.job';
 import { DeleteConnectedAccountAssociatedMessagingDataJob } from 'src/modules/messaging/jobs/delete-connected-account-associated-messaging-data.job';
 import { BlocklistItemDeleteMessagesJob } from 'src/modules/messaging/jobs/blocklist-item-delete-messages.job';
 import { GmailFullSyncJob } from 'src/modules/messaging/jobs/gmail-full-sync.job';
@@ -190,6 +191,10 @@ import { BlocklistItemDeleteCalendarEventsJob } from 'src/modules/calendar/jobs/
     {
       provide: BlocklistItemDeleteCalendarEventsJob.name,
       useClass: BlocklistItemDeleteCalendarEventsJob,
+    },
+    {
+      provide: BlocklistReimportMessagesJob.name,
+      useClass: BlocklistReimportMessagesJob,
     },
   ],
 })
